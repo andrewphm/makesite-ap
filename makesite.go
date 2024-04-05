@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"html/template"
+	"flag"
+	"strings"
 )
 
 type Page struct {
@@ -15,16 +17,21 @@ type Page struct {
 }
 
 func main() {
-	textContent, err := ioutil.ReadFile("first-post.txt")
+	fileNameFlag := flag.String("file", "first-post.txt", "The name of the file to convert to HTML.")
+
+	flag.Parse()
+	fileNameWithoutExtension := strings.TrimSuffix(*fileNameFlag, ".txt")
+
+	textContent, err := ioutil.ReadFile(*fileNameFlag)
 	if err != nil {
 		fmt.Println("Error reading file.")
 		panic(err)
 	}
 
 	page := Page{
-		TextFilePath: "first-post.txt",
-		TextFileName: "first-post",
-		HTMLPagePath: "first-post.html",
+		TextFilePath: *fileNameFlag,
+		TextFileName: fileNameWithoutExtension,
+		HTMLPagePath: fileNameWithoutExtension + ".html",
 		Content: string(textContent),
 	}
 
