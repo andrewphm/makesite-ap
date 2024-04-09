@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type Page struct {
@@ -18,10 +19,14 @@ type Page struct {
 }
 
 func main() {
+	startTime := time.Now()
+
 	dirFlag := flag.String("dir", "", "The directory to search for text files")
 	fileFlag := flag.String("file", "", "The single text file to process")
 	flag.Parse()
 
+	pageCount := 0
+	totalSizeBytes := int64(0)
 
 	htmlDir := "html_pages"
 	if err := os.MkdirAll(htmlDir, os.ModePerm); err != nil {
@@ -30,7 +35,7 @@ func main() {
 	}
 
 	if *fileFlag != "" {
-		processFile(*fileFlag, htmlDir)
+		processFile(*fileFlag, htmlDir, &pageCount, &totalSizeBytes)
 	} else if *dirFlag != "" {
 		files, err := ioutil.ReadDir(*dirFlag)
 		if err != nil {
@@ -41,15 +46,21 @@ func main() {
 			if !file.IsDir() && strings.HasSuffix(file.Name(), ".txt") {
 				fmt.Println(file.Name())
 				filePath := filepath.Join(*dirFlag, file.Name())
-				processFile(filePath, htmlDir)
+				processFile(filePath, htmlDir, &pageCount, &totalSizeBytes)
 			}
 		}
 	} else {
 		fmt.Println("No file or directory specified. Use --file or --dir flag.")
 	}
+
+	elapsed := time.Since(startTime)
+	totalSizeKB := float64(totalSizeBytes) / 1024.0
+
+	fmt.Printf("\033[1m\033[32mSuccess!\033[0m Generated \033[1m%d\033[0m pages.\n", pageCount)
+	fmt.Printf("Total size %.2fKB. Total time %.2f ms. \n", totalSizeKB, float64(elapsed.Milliseconds()))
 }
 
-func processFile(filePath, htmlDir string) {
+func processFile(filePath, htmlDir string, pageCount *int, totalSizeBytes *int64) {
 	fileName := filepath.Base(filePath)
 	fileNameWithoutExt := strings.TrimSuffix(fileName, ".txt")
 	htmlFilePath := filepath.Join(htmlDir, fileNameWithoutExt+".html")
@@ -62,6 +73,11 @@ func processFile(filePath, htmlDir string) {
 	}
 
 	generateHTMLPage(page)
+	*pageCount++
+	info, err := os.Stat(page.HTMLPagePath)
+	if err == nil {
+		*totalSizeBytes += info.Size()
+	}
 }
 
 func readFileContent(filePath string) string {
