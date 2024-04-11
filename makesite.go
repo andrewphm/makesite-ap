@@ -19,6 +19,11 @@ type Page struct {
 	Content      template.HTML
 }
 
+// Two ways to run my program:
+// `go run makesite.go --dir=text_files`
+// `go run makesite.go --file=text_files/first.txt`
+
+
 func main() {
 	startTime := time.Now()
 
