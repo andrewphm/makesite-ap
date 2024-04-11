@@ -1,0 +1,35 @@
+# Sample Markdown
+
+This is a simple Markdown document to test the Markdown to HTML conversion capabilities of your Go program.
+
+## Headings
+
+The document includes examples of different levels of headings.
+
+### Subheading Level 3
+
+More detailed topics can have their own headings.
+
+#### Subheading Level 4
+
+Even more detail under a subheading.
+
+## Paragraphs
+
+Paragraphs are separated by empty lines. Within a paragraph, you can have text that is **bold**, _italic_, or even `inline code`.
+
+## Lists
+
+You can also include lists in your Markdown.
+
+- Item 1
+- Item 2
+  - Subitem 2.1
+  - Subitem 2.2
+- Item 3
+
+Numbered lists work too:
+
+1. First item
+2. Second item
+3. Third item

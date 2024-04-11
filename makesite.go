@@ -9,13 +9,14 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+	"github.com/russross/blackfriday/v2"
 )
 
 type Page struct {
 	TextFilePath string
 	TextFileName string
 	HTMLPagePath string
-	Content      string
+	Content      template.HTML
 }
 
 func main() {
@@ -69,7 +70,7 @@ func processFile(filePath, htmlDir string, pageCount *int, totalSizeBytes *int64
 		TextFilePath: filePath,
 		TextFileName: fileNameWithoutExt,
 		HTMLPagePath: htmlFilePath,
-		Content:      readFileContent(filePath),
+		Content:      template.HTML(readFileContent(filePath)),
 	}
 
 	generateHTMLPage(page)
@@ -86,7 +87,10 @@ func readFileContent(filePath string) string {
 		fmt.Printf("Error reading file %s: %v\n", filePath, err)
 		return ""
 	}
-	return string(contentBytes)
+
+	output := blackfriday.Run(contentBytes)
+
+	return string(output)
 }
 
 func generateHTMLPage(page Page) {
